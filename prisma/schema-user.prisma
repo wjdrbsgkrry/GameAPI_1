@@ -1,0 +1,56 @@
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/@prisma/user/client"
+}
+
+datasource userDB {
+  provider = "mysql"
+  url      = env("DATABASE_URL_USER")
+}
+
+model Users {
+  id Int @id @default(autoincrement()) @map("id")
+  name String @map("name")
+  code String @unique @map("code")
+  password String @map("password")
+  characters Characters[]
+
+  @@map("Users")
+}
+
+model Characters {
+  id Int @id @default(autoincrement()) @map("characterId")
+  name String @unique @map("name")
+  health  Int @map("item_price")
+  power Int @map("item_power")
+  money Int @map("money")
+
+  userId Int @map("userId")
+  users Users @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  characterInven CharacterInven?
+  characterEquip CharacterEquip?
+
+  @@map("Characters")
+}
+
+model CharacterInven {
+  id Int @id @default(autoincrement()) @map("characterInvenId")
+  characterId Int @unique @map("characterId")
+  items Json @map("items")
+
+  characters Characters @relation(fields: [characterId], references: [id], onDelete: Cascade)
+}
+
+model CharacterEquip {
+  id Int @id @default(autoincrement()) @map("characterEquipId")
+  characterId Int @unique @map("characterId")
+  head String? @map("head")
+  armor String? @map("armor")
+  weapon String? @map("weapon")
+  boots String? @map("boots")
+  accessory String? @map("accessory")
+
+  characters Characters @relation(fields: [characterId], references: [id], onDelete: Cascade)
+}
