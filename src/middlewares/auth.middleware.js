@@ -11,13 +11,13 @@ export default async (req, res, next) => {
     const id = decodedToken.userId;
 
     const user = await prisma_User.Users.findFirst({
-      where: { id: { equels: id } },
+      where: { id: id },
     });
     if (!user) {
       res.clearCookies("authorization");
       throw new Error("토큰 사용자가 존재하지 않습니다.");
     }
-
+    console.log(user);
     req.user = user;
 
     next();

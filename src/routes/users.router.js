@@ -2,14 +2,11 @@ import express from "express";
 import bcrypt from "bcrypt";
 import { prisma_User } from "../utils/prisma/index.js";
 import jwt from "jsonwebtoken";
-import auth from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 
-// 회원가입 API
 router.post("/sign-up", async (req, res, next) => {
   try {
-    //throw new Error("테스트 에러입니다.");
     const { name, code, password, PwCheck } = req.body;
     const isExistUser = await prisma_User.Users.findFirst({
       where: { code },
@@ -53,12 +50,12 @@ router.post("/sign-up", async (req, res, next) => {
 
     return res.status(201).json({ message: "회원가입이 완료되었습니다." });
   } catch (error) {
-    next(err);
+    next(error);
   }
 });
 
-//로그인 api
-router.post("/sign-in", async (req, res, next) => {
+router.get("/sign-in", async (req, res, next) => {
+  res.clearCookie("authorization");
   const { code, password } = req.body;
 
   const user = await prisma_User.Users.findFirst({
@@ -79,7 +76,7 @@ router.post("/sign-in", async (req, res, next) => {
     },
     process.env.ACCESS_TOKEN_KEY,
     {
-      expiresIn: "1h",
+      expiresIn: "20s",
     }
   );
 
